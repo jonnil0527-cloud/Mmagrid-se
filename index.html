@@ -239,6 +239,13 @@ nav.main a{white-space:nowrap}
 .clip{display:flex;align-items:center;justify-content:space-between;gap:1rem;color:inherit}
 .clip .play{flex:none;display:inline-grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:50%;background:var(--primary);color:#fff;font-size:.8rem}
 .clip:hover b{color:var(--primary)}
+.ad-box{margin-top:1.5rem;padding:1rem 1.1rem;border:1px solid color-mix(in srgb,var(--gold) 55%,transparent);background:color-mix(in srgb,var(--gold) 9%,transparent);border-radius:.9rem;font-size:.88rem;line-height:1.55}
+.ad-box b{color:var(--gold);letter-spacing:.06em;text-transform:uppercase;font-size:.72rem;display:block;margin-bottom:.25rem}
+.bet-btn{display:inline-flex;align-items:center;min-height:2.5rem;padding:0 1rem;border-radius:.5rem;background:var(--primary);color:#fff;font-size:.8rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.bet-btn:active{transform:scale(.98)}
+.ev-card li .row-r{display:flex;align-items:center;gap:.6rem}
+.rg{margin-top:2rem;padding:1rem 1.1rem;border:1px solid var(--border);border-radius:.9rem;background:var(--card);font-size:.85rem;line-height:1.6;color:var(--muted)}
+.rg b{color:var(--fg)}
 @media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
 </style>
 </head>
@@ -251,6 +258,7 @@ nav.main a{white-space:nowrap}
     <a href="#/galor" data-r="galor">Galor</a>
     <a href="#/jamfor" data-r="jamfor">Jämför</a>
     <a href="#/highlights" data-r="highlights">Highlights</a>
+    <a href="#/odds" data-r="odds">Odds</a>
     <a href="#/forum" data-r="forum">Forum</a>
   </nav>
 </div></header>
@@ -259,7 +267,7 @@ nav.main a{white-space:nowrap}
 <div class="tray" id="tray" hidden></div>
 <footer class="foot"><div class="wrap">
   <a class="brand" href="#/"><span class="mark"><svg viewBox="0 0 32 32" aria-hidden="true"><polygon points="16,1.5 28.5,7.2 28.5,24.8 16,30.5 3.5,24.8 3.5,7.2" fill="currentColor"/></svg><span>M</span></span><b>MMAgrid</b></a>
-  <p>Oberoende fansajt. Ej affiliaterad med UFC. Rankingen är ungefärlig och uppdateras manuellt.</p>
+  <p>Oberoende fansajt. Ej affiliaterad med UFC. Rankingen är ungefärlig och uppdateras manuellt. Sidan innehåller affiliatelänkar till Betsson. 18+ · Spela ansvarsfullt.</p>
 </div></footer>
 
 <script>
@@ -563,6 +571,27 @@ function eventsView(){
   </div>`;
 }
 
+/* Affiliatelänk till Betsson. Klistra in din egen länk från Betsson Group Affiliates här när du fått den. */
+const BETSSON_URL = "";
+const BETSSON_FALLBACK = "https://www.betsson.com/sv";
+const betUrl = () => BETSSON_URL || BETSSON_FALLBACK;
+
+function oddsView(){
+  const evs = upcomingEvents();
+  const link = (txt) => `<a class="bet-btn" href="${esc(betUrl())}" target="_blank" rel="sponsored noopener noreferrer">${txt} ↗</a>`;
+  return `<div class="wrap page" style="max-width:56rem">
+    <p class="eyebrow">Spel på MMA</p><h1 class="display">Odds</h1>
+    <p class="intro">Kommande matcher med direktlänk till Betssons MMA-odds. Oddsen ändras löpande och visas hos Betsson, så vi visar inga egna siffror här.</p>
+    <div class="ad-box"><b>Annons · 18+</b>Länkarna på den här sidan är affiliatelänkar. Om du registrerar dig och spelar hos Betsson kan MMAgrid få ersättning, utan extra kostnad för dig.</div>
+    <div style="margin-top:1.25rem">${link("Se alla MMA-odds hos Betsson")}</div>
+    ${evs.length?`<ol class="events">${evs.map(e=>`
+      <li class="ev-card"><div class="h"><h2>${esc(e.event)}</h2><span class="d">${esc(e.dateLabel)}</span></div>
+      <ul>${e.bouts.map(b=>`<li><p>${esc(b.a)}<em>mot</em>${esc(b.b)}</p><span class="row-r">${b.title?'<span class="tag">Titelmatch</span>':""}${link("Odds")}</span></li>`).join("")}</ul></li>`).join("")}</ol>`
+    :`<div class="empty" style="margin-top:2rem"><p>Inga kommande matcher är inlagda just nu.</p></div>`}
+    <div class="rg"><b>Spela ansvarsfullt.</b> Du måste vara minst 18 år. Spel ska vara underhållning, och du ska aldrig spela för pengar du inte har råd att förlora. Behöver du stöd? Kontakta <a href="https://www.stodlinjen.se" target="_blank" rel="noopener noreferrer" style="color:var(--primary);text-decoration:underline">Stödlinjen</a> (020-819 100) eller stäng av dig själv via <a href="https://www.spelpaus.se" target="_blank" rel="noopener noreferrer" style="color:var(--primary);text-decoration:underline">Spelpaus.se</a>.</div>
+  </div>`;
+}
+
 function notFound(){
   return `<div class="wrap" style="min-height:70vh;display:grid;place-items:center;text-align:center"><div>
     <h1 class="display" style="font-size:5rem">404</h1><p style="font-weight:600;font-size:1.2rem;margin:.5rem 0">Sidan hittades inte</p>
@@ -863,6 +892,7 @@ function route(){
   }
   else if(page==="galor"){ app.innerHTML = eventsView(); scrollTo(0,0); }
   else if(page==="highlights"){ app.innerHTML = highlightsView(); scrollTo(0,0); }
+  else if(page==="odds"){ app.innerHTML = oddsView(); scrollTo(0,0); }
   else if(page==="forum"){ app.innerHTML = forumView(); bindForumFeed(); paintForum(); scrollTo(0,0); }
   else if(page==="jamfor"){
     if(sub || sub2) selected = [sub,sub2].filter(id => id && FIGHTERS.has(id));
@@ -879,7 +909,7 @@ function route(){
   }
   else { app.innerHTML = notFound(); scrollTo(0,0); }
   updateTray();
-  document.title = ({home:"MMAgrid – Ranking, viktklasser och info om UFC",ranking:"UFC Ranking – Alla viktklasser | MMAgrid",galor:"Kommande UFC-galor | MMAgrid",jamfor:"Jämför fighters | MMAgrid",highlights:"UFC Highlights | MMAgrid",forum:"Forum | MMAgrid"})[page] || "Sidan hittades inte | MMAgrid";
+  document.title = ({home:"MMAgrid – Ranking, viktklasser och info om UFC",ranking:"UFC Ranking – Alla viktklasser | MMAgrid",galor:"Kommande UFC-galor | MMAgrid",jamfor:"Jämför fighters | MMAgrid",highlights:"UFC Highlights | MMAgrid",odds:"MMA-odds | MMAgrid",forum:"Forum | MMAgrid"})[page] || "Sidan hittades inte | MMAgrid";
 }
 addEventListener("hashchange", route);
 route();
